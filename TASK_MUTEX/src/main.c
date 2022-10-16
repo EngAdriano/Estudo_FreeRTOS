@@ -15,6 +15,7 @@
 #include "esp_log.h"         
 
 float temperatura;
+
 xSemaphoreHandle mutexI2C;
 
 float acessa_i2c(int comando)
