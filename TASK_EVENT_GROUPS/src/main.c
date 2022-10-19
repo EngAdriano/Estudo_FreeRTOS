@@ -15,6 +15,9 @@
 #include "freertos/event_groups.h"
 #include "esp_log.h"
 
+//Variáveis globais
+bool onOff = true;
+
 //Variáveis de Handles para o Sistema Operacional FreeRTOS
 EventGroupHandle_t eventGroupConectividade;
 const int conexaoWifi = BIT0;           //Flags de controle para os eventos
@@ -58,8 +61,22 @@ void conectaMQTT(void *params)
     while (true)
     {
         xSemaphoreTake(ligarMQTT, portMAX_DELAY);
-        ESP_LOGI("MQTT", "Conectado ao MQTT");
-        xEventGroupSetBits(eventGroupConectividade, conexaoMQTT);   //Seta o bit do evento conexão MQTT
+        ESP_LOGI("MQTT", "Conectando ao MQTT");
+
+        if(onOff == true)
+        {
+            xEventGroupSetBits(eventGroupConectividade, conexaoMQTT);   //Seta o bit do evento conexão MQTT
+            onOff = false;
+            printf("\nConectado\n");
+        }
+        else
+        {
+            xEventGroupClearBits(eventGroupConectividade, conexaoMQTT); //Desliga bits
+            onOff = true;
+            printf("\nDesconectado\n\n");
+        }
+
+        
     }
     
 }
@@ -71,7 +88,7 @@ void processa_dados(void *params)
         //Aguarda WiFi e MQTT
         //Verifica se os bits do event group aconteceram: (Handle, bit0 | bit1, Zera flags(bits)?, Espera por todos os bits?, tempo de espera )
         xEventGroupWaitBits(eventGroupConectividade, conexaoWifi | conexaoMQTT, true, true, portMAX_DELAY);
-        printf("\nProcessando Dados\n\n");
+        printf("Processando Dados\n\n");
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         ESP_LOGI("TASK", "Desconecta da internet\n");
     }
