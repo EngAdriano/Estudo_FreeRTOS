@@ -56,7 +56,7 @@ void lcd_display(void * params)
 {
     while ((true))
     {
-        if(xSemaphoreTake(mutexI2C, 1000 / portTICK_PERIOD_MS))  //Testa se o semáforo esta livre e pega, tempo máximo de espera 1s.
+        if(xSemaphoreTake(mutexI2C, 1000 / portTICK_PERIOD_MS))
         {
             ESP_LOGI("Display", "Escreve no LCD");
             acessa_i2c(2);
